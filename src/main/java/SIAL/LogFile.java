@@ -22,7 +22,7 @@ public class LogFile extends FileEditor {
 private File infile; 
 
 /**
- * The directory that corresponds to your log file. We will analyze the files in this directory and write the file names to the log file after we complete each analysis
+ * The directory that your log file is watching. We will analyze the files in this directory and write the file names to the log file after we complete the analysis for that file
  */
 private File inputDir;
 
