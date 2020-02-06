@@ -3,6 +3,10 @@ package SIAL;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.commons.io.FilenameUtils;
@@ -16,6 +20,7 @@ import org.junit.Assert;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 import org.scijava.widget.NumberWidget;
 
 import ij.IJ;
@@ -29,7 +34,8 @@ import net.imagej.ImageJ;
 @Plugin(type = Command.class, headless = true, menuPath = "Plugins > SIAL > PhenoScoreKeeper")
 public class PhenoScoreKeeper implements Command {
 	
-	
+	@Parameter
+	private UIService ui;
 	
 	@Parameter(label = "file extension (e.g. tiff, jpeg, czi)", persist = false)
 	private String fExt;
@@ -40,8 +46,12 @@ public class PhenoScoreKeeper implements Command {
 	@Parameter(label="Select an output directory where PhenotypeScores.csv file will be placed", style="directory", persist = false)
 	private File outputDir;
 	
-	@Parameter(label="Select a log file (will record which images you have already scored)", style="file", persist = false)
-	private File logFile;
+	
+	@Parameter(label="If a new analysis, select a directory where records file will be created", style="directory", persist = false, required = false)
+	private File recordsDirectory = null;
+	
+	@Parameter(label="If a continued anlaysis, select a records file.", style="file", persist = false, required = false)
+			private File recordsFile = null;
 
 	@Parameter(label = "Input number of phenotypes",
 			style = NumberWidget.SPINNER_STYLE, min = "0", max = "1000")
@@ -51,17 +61,52 @@ public class PhenoScoreKeeper implements Command {
 	
 	@Override
 	public void run() {
-		// check if log file exists, if not, create it
-	
-		if (!logFile.exists()) {
-		try {
-			Files.createFile(logFile.toPath());
-		} catch (IOException e) {
-			
-		}}	
 		
-		//Creating a LogFile object will allow us to easily modify and retrieve information from the chosen logfile
-		LogFile logfileObj = new LogFile(logFile, inputDir, fExt);
+		//Creating a LogFile object will allow us to easily modify and retrieve information from the chosen recordsFile. 
+		//We will instantiate this object based on which one of the four below if statements gets executed
+		LogFile logfileObj = null;
+		
+		//We will use this date variable to name files
+		String date = new SimpleDateFormat("dd_MM_yyyy").format(new Date());
+		
+		//1. Error. User must either create a new records file or load a previous version, otherwise their progress will not be recorded.
+		if ( recordsDirectory == null && recordsFile == null) {
+			ui.showDialog("WARNING! You didnt create a records file or load a previous records file!.");
+			throw new IllegalArgumentException("You didnt create a records file or load a previous records file!.");
+		}
+		
+		//2. Error. User cannot choose to create a new records file and load a previous version. This would mix up experiments
+		if  ( recordsDirectory != null && recordsFile != null) {
+			ui.showDialog("WARNING! You cannot create a new records file and load a previous records file.");
+			throw new IllegalArgumentException("You cannot create a neww file and load a previous records file");
+		}
+		
+		//3. OK. Create a new records file in the chosen records directory
+		if  ( recordsDirectory != null && recordsFile == null) {
+			
+			Path recordsFilePath = Paths.get(recordsDirectory.getAbsolutePath(), "PhenoScoreKeeperLog" + "_" + date + ".txt");
+			
+			File newRecordsFile = new File(recordsFilePath.toString());
+			
+			try {
+				newRecordsFile.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			logfileObj = new LogFile(newRecordsFile, inputDir, fExt);
+			
+		}
+		
+		
+		//4. OK. load the chosen records file
+		if  ( recordsDirectory == null && recordsFile != null) {
+			
+			logfileObj = new LogFile(recordsFile, inputDir, fExt);
+			
+		}
+		
 
 		
 		//lambda expression to only list files having specified extension
