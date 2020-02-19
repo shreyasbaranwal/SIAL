@@ -231,7 +231,14 @@ public class ROIRecorder implements Command {
 					
 					rm.runCommand(imp, "Add");
 					
-					//Do everything possible to clear the selections in the ROI manager. So we can restart next channel with clean slate.
+					//Rename this combined ROI/Summary ROI something useful
+					Integer iChannel = channel; 
+					rm.rename(rm.getCount() - 1, "Channel" + "_" + iChannel.toString() + "_" + "Summary");
+					
+					
+					
+					
+					//Now do everything possible to clear the selections in the ROI manager so we can begin the next channel with a clean slate.
 					
 					rm.runCommand(imp, "Deselect");
 					
