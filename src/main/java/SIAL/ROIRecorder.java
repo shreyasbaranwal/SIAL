@@ -221,8 +221,41 @@ public class ROIRecorder implements Command {
 					
 					else if (roiArr.length == 0) { ; } //similar check. if there were no ROIs for this channel, pass
 					
-					else { //if there are ROIs for this channel, //select them, combine them, and add the combined ROI to the ROIManger
+					else { //if there are ROIs for this channel, we need to select them, combine them, and add the combined ROI to the ROIManger
 				
+					
+						/*
+						 * But before we combine ROIs, we need to check if there was only 1 ROI for this channel. If there was, we can't
+						 * combine ROIs. But for consistency, we will re-add that ROI, and rename the single ROI to indicate
+						 * that it is the Summary ROI for the channel
+						 */					
+						
+					if (roiArr.length == 1) { 
+					
+				
+					//Integer iChannel = channel; 
+					//rm.rename(roiArr[0], "Channel" + "_" + iChannel.toString() + "_" + "Summary");
+					
+					
+					rm.select(roiArr[0]);
+						
+					rm.runCommand(imp, "Add");
+						
+					//Rename this Summary ROI 
+					Integer iChannel = channel; 
+					rm.rename(rm.getCount() - 1, "Channel" + "_" + iChannel.toString() + "_" + "Summary");
+						
+					rm.runCommand(imp, "Deselect");
+					
+					rm.runCommand(imp, "Select None");
+					
+					rm.run("Select None");
+					
+					}
+					
+					//if there was more than one ROI for this channel, we can combine all the ROIs and add that combined ROI and rename that combined ROI
+					else {
+					
 					rm.setSelectedIndexes(roiArr);
 					
 					rm.runCommand(imp, "Combine");
@@ -245,6 +278,7 @@ public class ROIRecorder implements Command {
 					rm.run("Select None");
 					
 					}
+					} //end of else statement for this current channel of the current Image (imp)
 				} //end of for loop over each channel of the current Image (imp)
 			
 			//Now that we've updated our RoiManager, we need to measure the ROIset, save the ROIset and results, and close the ROImanager;
