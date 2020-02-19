@@ -144,8 +144,6 @@ public class ROIRecorder implements Command {
 	
 	String prefix = "non_background";
 	
-	//logfileObj.notAnalyzedYet() returns the files in the input directory which have not been analyzed yet
-	//try {
 		try {
 			for (File file : logfileObj.notAnalyzedYet()) {
 				
