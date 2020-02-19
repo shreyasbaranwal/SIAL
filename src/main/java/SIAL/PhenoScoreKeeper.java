@@ -47,10 +47,10 @@ public class PhenoScoreKeeper implements Command {
 	private File outputDir;
 	
 	
-	@Parameter(label="If a new analysis, select a directory where records file will be created", style="directory", persist = false, required = false)
+	@Parameter(label="If new analysis, select a directory for records file (records which images you have already analyzed)", style="directory", persist = false, required = false)
 	private File recordsDirectory = null;
 	
-	@Parameter(label="If a continued anlaysis, select a records file.", style="file", persist = false, required = false)
+	@Parameter(label="If a continued anlaysis, select your records file.", style="file", persist = false, required = false)
 			private File recordsFile = null;
 
 	@Parameter(label = "Input number of phenotypes",
@@ -67,7 +67,7 @@ public class PhenoScoreKeeper implements Command {
 		LogFile logfileObj = null;
 		
 		//We will use this date variable to name files
-		String date = new SimpleDateFormat("dd_MM_yyyy").format(new Date());
+		String date = new SimpleDateFormat("MM_dd_yyyy").format(new Date());
 		
 		//1. Error. User must either create a new records file or load a previous version, otherwise their progress will not be recorded.
 		if ( recordsDirectory == null && recordsFile == null) {
