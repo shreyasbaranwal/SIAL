@@ -45,10 +45,10 @@ public class ROIRecorder implements Command {
 	@Parameter(label="Select an output directory", style="directory", persist = false)
 	private File outputDir;
 	
-	@Parameter(label="If new analysis, select a directory for records file (records which images you have already analyzed)", style="directory", persist = false, required = false)
+	@Parameter(label="If new analysis, select a directory for your ROI_Records_File (records which images you have already analyzed)", style="directory", persist = false, required = false)
 	private File recordsDirectory = null;
 	
-	@Parameter(label="If a continued anlaysis, select your records file.", style="file", persist = false, required = false)
+	@Parameter(label="If a continued anlaysis, load your ROI_Records_File", style="file", persist = false, required = false)
 			private File recordsFile = null;
 	
 	
@@ -79,8 +79,20 @@ public class ROIRecorder implements Command {
 					throw new IllegalArgumentException("You cannot create a neww file and load a previous records file");
 				}
 				
-				//3. OK. Create a new records file in the chosen records directory
+				//3. New Analysis. This is OK. Create a new ROI_Records_File file in the chosen directory as long as there is no existing ROI_Records_File in the directory.
+				//We don't want users unintentionally overwriting their records files.
 				if  ( recordsDirectory != null && recordsFile == null) {
+					
+					File[] ROI_Records_Files = recordsDirectory.listFiles((d, name) -> name.startsWith("ROI_Records_File"));
+					
+					if (ROI_Records_Files.length != 0) {
+						
+						ui.showDialog("WARNING! There is already an existing ROI_Records_File in this directory."
+								+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
+						
+						throw new IllegalArgumentException("WARNING! There is already an existing ROI_Records_File in this directory."
+								+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
+					}
 					
 					Path recordsFilePath = Paths.get(recordsDirectory.getAbsolutePath(), "ROI_Records_File" + "_" + date + ".txt");
 					
