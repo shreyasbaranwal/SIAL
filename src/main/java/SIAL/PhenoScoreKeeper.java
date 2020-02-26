@@ -43,7 +43,7 @@ public class PhenoScoreKeeper implements Command {
 	@Parameter(label="Select input directory", style="directory", persist = false)
 	private File inputDir;
 	
-	@Parameter(label="Select an output directory where results PhenotypeScores.csv file will be placed", style="directory", persist = false)
+	@Parameter(label="Select an output directory", style="directory", persist = false)
 	private File outputDir;
 	
 	
@@ -81,7 +81,7 @@ public class PhenoScoreKeeper implements Command {
 			throw new IllegalArgumentException("You cannot create a neww file and load a previous records file");
 		}
 		
-		//3. New Analysis. This is OK. Create a new records file in the chosen records directory, AS LONG AS THERE IS NO EXISTING PhenoScoreKeeperLog FILE IN THIS DIRECTORY
+		//3. New Analysis. This is OK. Create a new PhenoScoreKeeperLog file in the chosen records directory, AS LONG AS THERE IS NO EXISTING PhenoScoreKeeperLog FILE IN THIS DIRECTORY
 		if  ( recordsDirectory != null && recordsFile == null) {
 			
 			//First ensure that there are no existing PhenoScoreKeeperLog files. We don't want to overwrite anything unintentionally!
