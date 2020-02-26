@@ -43,14 +43,14 @@ public class PhenoScoreKeeper implements Command {
 	@Parameter(label="Select input directory", style="directory", persist = false)
 	private File inputDir;
 	
-	@Parameter(label="Select an output directory where PhenotypeScores.csv file will be placed", style="directory", persist = false)
+	@Parameter(label="Select an output directory where results PhenotypeScores.csv file will be placed", style="directory", persist = false)
 	private File outputDir;
 	
 	
-	@Parameter(label="If new analysis, select a directory for records file (records which images you have already analyzed)", style="directory", persist = false, required = false)
+	@Parameter(label="If a new analysis, select a directory for PhenoScoreKeeperLog file (this file records the images you have already analyzed)", style="directory", persist = false, required = false)
 	private File recordsDirectory = null;
 	
-	@Parameter(label="If a continued anlaysis, select your records file.", style="file", persist = false, required = false)
+	@Parameter(label="If a continued anlaysis, load your PhenoScoreKeeperLog file.", style="file", persist = false, required = false)
 			private File recordsFile = null;
 
 	@Parameter(label = "Input number of phenotypes",
@@ -81,8 +81,24 @@ public class PhenoScoreKeeper implements Command {
 			throw new IllegalArgumentException("You cannot create a neww file and load a previous records file");
 		}
 		
-		//3. OK. Create a new records file in the chosen records directory
+		//3. New Analysis. This is OK. Create a new records file in the chosen records directory, AS LONG AS THERE IS NO EXISTING PhenoScoreKeeperLog FILE IN THIS DIRECTORY
 		if  ( recordsDirectory != null && recordsFile == null) {
+			
+			//First ensure that there are no existing PhenoScoreKeeperLog files. We don't want to overwrite anything unintentionally!
+			//This lambda expression will list all files starting with "PhenoScoreKeeperLog"
+			File[] phenoScoreKeeperFiles = recordsDirectory.listFiles((d, name) -> name.startsWith("PhenoScoreKeeperLog"));
+			if (phenoScoreKeeperFiles.length != 0) {
+				
+				ui.showDialog("WARNING! There is already an existing PhenoScoreKeeperLog in this directory."
+						+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
+				
+				throw new IllegalArgumentException("WARNING! There is already an existing PhenoScoreKeeperLog in this directory."
+						+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
+				
+			}
+			
+			
+			
 			
 			Path recordsFilePath = Paths.get(recordsDirectory.getAbsolutePath(), "PhenoScoreKeeperLog" + "_" + date + ".txt");
 			
@@ -100,7 +116,7 @@ public class PhenoScoreKeeper implements Command {
 		}
 		
 		
-		//4. OK. load the chosen records file
+		//4. Continued Analysis. This also OK. Load the chosen PhenoScoreKeeperLog records file
 		if  ( recordsDirectory == null && recordsFile != null) {
 			
 			logfileObj = new LogFile(recordsFile, inputDir, fExt);
