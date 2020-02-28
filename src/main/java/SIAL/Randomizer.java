@@ -3,6 +3,8 @@ package SIAL;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,7 +31,7 @@ public class Randomizer implements Command {
 	@Parameter(label="Select input directory", style="directory", persist = false)
 	private File inputDir;
 	
-	@Parameter(label="Select an output directory\n(must be empty)", style="directory", persist = false)
+	@Parameter(label="Select an output directory\n(must not contain any files with your specified file extension)", style="directory", persist = false)
 	private File outputDir;
 	
 	
@@ -55,12 +57,11 @@ public void run() {
 				throw new IllegalArgumentException("Output directory must be a directory");
 			}
 			
-			//The specified output directory must empty. This prevents mixing up of randomized images
+			//The specified output directory must not contain any files with the specified extension. This prevents mixing up of randomized images
 			File [] outputFiles = outputDir.listFiles((d, name) -> name.endsWith(fExt));
 			
 			if (outputFiles.length != 0 ) {
-				throw new IllegalArgumentException("Output directory must be empty. Have you run this analysis before?\n"
-						+ "Also check for hidden files.");
+				throw new IllegalArgumentException("Output directory must be empty. Have you run this analysis before?\n");
 			}
 			
 			
@@ -125,7 +126,7 @@ public void run() {
 				
 			}
 			
-			//write the HashMap of random integers and original filenames to Key.txt
+			//write the HashMap of random integers and original filenames to Key.csv
 			try {
 				ExportDataToCsv.exportStringIntsMapToCsv(randomDict, outputDir.toString(), "Key.csv", new String[] {"original_name", "random_number"});;
 			} catch (IOException e) {
@@ -140,8 +141,27 @@ public void run() {
 		
 else {
 throw new IllegalArgumentException("Check that input directory exists and that it contains files with the specified extension");
-			   	}		
-	
+			   	}	
+		
+		/*
+		 * In addition to our Key.csv file, we will also write a Details.csv file to
+		 * record input_directory, output_directory, time analysis was run, and other
+		 * relevant experimental details.
+		 */		
+		
+		HashMap<String, String> detailsDict = new HashMap <String, String>();
+		
+		detailsDict.put("input_directory", inputDir.toString());
+		detailsDict.put("output_directory", outputDir.toString());
+		detailsDict.put("time_of_analysis", new SimpleDateFormat("MM_dd_yyyy").format(new Date()));
+		
+		try {
+			ExportDataToCsv.exportStringStringMapToCsv(detailsDict, outputDir.toString(), "Details.csv", null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 
 			}	
 	
