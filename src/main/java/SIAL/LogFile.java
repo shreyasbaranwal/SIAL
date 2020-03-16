@@ -38,7 +38,7 @@ private String fExtension;
  * 
  * 
  */
-	public LogFile(File infile, File inputDir, String fExtension) throws IOException {
+	public LogFile(File infile, File inputDir, String fExtension) {
 		
 		super(infile);
 		
@@ -70,6 +70,7 @@ private String fExtension;
 		return this.infile;
 		
 	}
+	
 	
 	 
 	
