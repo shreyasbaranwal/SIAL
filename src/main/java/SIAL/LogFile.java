@@ -33,19 +33,33 @@ private String fExtension;
 
 
 /**
- * Creates a new LogFileReader from given file, input directory, and file extension
+ * Creates a new LogFileReader from given file, input directory, outputDirectory, and file extension
+ * @throws IOException 
  * 
  * 
  */
-	public LogFile(File infile, File inputDir, String fExtension) {
+	public LogFile(File infile, File inputDir, String fExtension) throws IOException {
 		
 		super(infile);
 		
 		this.inputDir = inputDir;
 		
-		this.fExtension = fExtension;
+		this.fExtension = fExtension;	
 		
 		
+	}
+	
+	/**
+	 * Explicit method for appending metadata to log file, for example the input directory, date,
+	 * experiment name, etc. All metadata lines are prefixed with "Meta_data: " to enable differentiation between metadata and which files
+	 * have already been analyzed.
+	 * @param metadata_text For example "Name: My simple image analysis experiment" + 
+	 * @return void
+	 * @throws IOException 
+	 * 
+	 */
+	public void writeMetadata(String information) throws IOException {
+		this.appendLine("Meta_data:" + information);
 	}
 	
 	
@@ -57,10 +71,12 @@ private String fExtension;
 		
 	}
 	
+	 
+	
 	/**
 	 * 
 	 * 
-	 * @return the files that have not been analyzed yet
+	 * @return the files from inputDir that have not been analyzed yet
 	 * @throws IOException 
 	 * 
 	 */
@@ -105,6 +121,10 @@ private String fExtension;
 		
 
 		LogFile exLogfile  = new LogFile(log, inputdir, extension);
+		
+		exLogfile.writeMetadata("input_directory: " + exLogfile.inputDir.toString());
+		
+		exLogfile.writeMetadata("output_directory: " + exLogfile.whichLogFile().getParent().toString());
 		
 		System.out.println("All files");
 		
