@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Log files record which files in a directory have already been analyzed
@@ -33,25 +34,25 @@ private String fExtension;
 
 
 /**
- * Creates a new LogFileReader from given file, input directory, outputDirectory, and file extension
+ * Creates a new LogFileReader from given file, input directory, and file extension
  * @throws IOException 
  * 
  * 
  */
 	public LogFile(File infile, File inputDir, String fExtension) {
 		
-		super(infile);
+		super(infile); //explicitly invoke the constructor for parent class FileEditor
 		
-		this.inputDir = inputDir;
+		this.inputDir = inputDir; //new field
 		
-		this.fExtension = fExtension;	
+		this.fExtension = fExtension;//new field
 		
 		
 	}
 	
 	/**
 	 * Explicit method for appending metadata to log file, for example the input directory, date,
-	 * experiment name, etc. All metadata lines are prefixed with "Meta_data: " to enable differentiation between metadata and which files
+	 * experiment name, etc. All metadata lines are prefixed with "Meta_data:" to enable differentiation between metadata and which files
 	 * have already been analyzed.
 	 * @param metadata_text For example "Name: My simple image analysis experiment" + 
 	 * @return void
@@ -63,21 +64,12 @@ private String fExtension;
 	}
 	
 	
-	public File whichLogFile() {
-		
-		System.out.println(this.infile.toString());
-		
-		return this.infile;
-		
-	}
-	
-	
-	 
+ 
 	
 	/**
 	 * 
 	 * 
-	 * @return the files from inputDir that have not been analyzed yet
+	 * @return the files from inputDir that have not been analyzed yet. 
 	 * @throws IOException 
 	 * 
 	 */
@@ -89,6 +81,10 @@ private String fExtension;
 		
 		// if the log file is empty, just return all the extension relevant files
 		if (this.countLines() == 0) {return inputDirFiles; }
+		
+		//if the final line in the log file is Meta_data line, then we havent recorded/analyzed any files yet
+		//The regular expression matches a line beginning with "Meta_data:" and then any number of optional characters, and then the end of the line.
+		if (this.readFinalLine().matches("^Meta_data:(.*)?$")) {return inputDirFiles;}
 		
 		//otherwise return the files that are not in the log file
 		else { 
@@ -125,7 +121,7 @@ private String fExtension;
 		
 		exLogfile.writeMetadata("input_directory: " + exLogfile.inputDir.toString());
 		
-		exLogfile.writeMetadata("output_directory: " + exLogfile.whichLogFile().getParent().toString());
+		exLogfile.writeMetadata("output_directory: " + exLogfile.whichFile().getParent());
 		
 		System.out.println("All files");
 		
