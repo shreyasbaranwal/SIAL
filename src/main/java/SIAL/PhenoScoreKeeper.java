@@ -79,14 +79,14 @@ public class PhenoScoreKeeper implements Command {
 			throw new IllegalArgumentException("WARNING! You didnt load a PhenoLog file or properly create a new experiment.");
 		}
 		
-		//2. Error. User cannot load a PhenoLog file and then select fields for new analysis. This would mix up experiments
+		//2. Error. User cannot load a PhenoLog file and then select any of the fields for a new analysis. This would mix up experiments
 		if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null || spinnerInteger != null )) {
 			ui.showDialog("WARNING! You cannot load a previous PhenoLog file and fill out other fields.");
 			throw new IllegalArgumentException("WARNING! You cannot load a previous PhenoLog file and fill out other fields.");
 		}
 		
 		//3. New Analysis. This is OK. Create a new PhenoLog file in the chosen records directory, AS LONG AS THERE IS NO EXISTING PhenoLog FILE IN THIS DIRECTORY
-		if  (recordsFile == null && (fExt != null || inputDir != null || outputDir != null || spinnerInteger != null )) {
+		if  (recordsFile == null && (fExt != null && inputDir != null && outputDir != null && spinnerInteger != null )) {
 			
 			//First ensure that there are no existing PhenoLog files. We don't want to overwrite anything unintentionally!
 			//This lambda expression will list all files starting with "PhenoLog"
@@ -102,8 +102,8 @@ public class PhenoScoreKeeper implements Command {
 			}
 			
 			
-			
-			//By default, the records file is always created in the specified outputDir
+			//If we pass the above if check, create the recordsFile and corresponding LofFile object
+			//By default, the recordsFile is always created in the specified outputDir
 			Path recordsFilePath = Paths.get(outputDir.getAbsolutePath(), "PhenoLog" + "_" + date + ".txt");
 			
 			File newRecordsFile = new File(recordsFilePath.toString());
@@ -117,11 +117,24 @@ public class PhenoScoreKeeper implements Command {
 			
 			logfileObj = new LogFile(newRecordsFile, inputDir, fExt);
 			
+			try {
+				//record all relevant metadata to 
+				logfileObj.writeMetadata("input_directory:" + inputDir.getAbsolutePath());
+				logfileObj.writeMetadata("output_directory:" + logfileObj.whichFile().getParent());
+				logfileObj.writeMetadata("file_extension:" + fExt);
+				logfileObj.writeMetadata("number_of_phenotypes:" + spinnerInteger.toString());
+				logfileObj.writeMetadata("date:" + date);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 		}
 		
 		
-		//4. Continued Analysis. This also OK. Load the chosen PhenoLog records file and harvest the inputDir, outputDir, fExt, and  number of phenotypes
-		if  ( recordsFile != null) {
+		//4. Continued Analysis. This also OK. Load the chosen PhenoLog records file and harvest the inputDir, outputDir, fExt, and number of phenotypes
+		if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null && spinnerInteger == null )) {
 			
 			logfileObj = new LogFile(recordsFile, inputDir, fExt);
 			
