@@ -37,24 +37,28 @@ public class PhenoScoreKeeper implements Command {
 	@Parameter
 	private UIService ui;
 	
-	@Parameter(label = "file extension (e.g. tiff, jpeg, czi)", persist = false)
+	
+	//recordsFile will record which files we've analyzed and will store our metadata for this experiment (e.g. inputDir, fExt, outputDir)
+	//By default the recordsFile is prefixed with PhenoLog.
+	//Also by default this PhenoLog file is always placed in the outputDir
+	
+	@Parameter(label = "If a continued analysis, load your PhenoLog file. If a new analysis, ignore this field and fill out ALL below fields", 
+			style = "file", persist = false, required  = false)
+	private File recordsFile;
+	
+	
+	@Parameter(label = "file extension (e.g. tiff, jpeg, czi)", persist = false, required = false)
 	private String fExt;
 	
-	@Parameter(label="Select input directory", style="directory", persist = false)
+	@Parameter(label="Select input directory", style="directory", persist = false, required = false)
 	private File inputDir;
 	
-	@Parameter(label="Select an output directory", style="directory", persist = false)
+	@Parameter(label="Select an output directory", style="directory", persist = false, required = false)
 	private File outputDir;
 	
-	
-	@Parameter(label="If a new analysis, select a directory for PhenoScoreKeeperLog file (this file records the images you have already analyzed)", style="directory", persist = false, required = false)
-	private File recordsDirectory = null;
-	
-	@Parameter(label="If a continued anlaysis, load your PhenoScoreKeeperLog file.", style="file", persist = false, required = false)
-			private File recordsFile = null;
 
 	@Parameter(label = "Input number of phenotypes",
-			style = NumberWidget.SPINNER_STYLE, min = "0", max = "1000")
+			style = NumberWidget.SPINNER_STYLE, min = "0", max = "1000", required = false)
 		private Integer spinnerInteger;
 
 	
@@ -69,38 +73,38 @@ public class PhenoScoreKeeper implements Command {
 		//We will use this date variable to name files
 		String date = new SimpleDateFormat("MM_dd_yyyy").format(new Date());
 		
-		//1. Error. User must either create a new records file or load a previous version, otherwise their progress will not be recorded.
-		if ( recordsDirectory == null && recordsFile == null) {
-			ui.showDialog("WARNING! You didnt create a records file or load a previous records file!.");
-			throw new IllegalArgumentException("You didnt create a records file or load a previous records file!.");
+		//1. Error. User must either create a new experiment or load a previous PhenoLog file, otherwise their progress will not be recorded.
+		if (recordsFile == null && (fExt == null || inputDir == null || outputDir == null || spinnerInteger == null )) {
+			ui.showDialog("WARNING! You didnt load a PhenoLog file or properly create a new experiment.");
+			throw new IllegalArgumentException("WARNING! You didnt load a PhenoLog file or properly create a new experiment.");
 		}
 		
-		//2. Error. User cannot choose to create a new records file and load a previous version. This would mix up experiments
-		if  ( recordsDirectory != null && recordsFile != null) {
-			ui.showDialog("WARNING! You cannot create a new records file and load a previous records file.");
-			throw new IllegalArgumentException("You cannot create a neww file and load a previous records file");
+		//2. Error. User cannot load a PhenoLog file and then select fields for new analysis. This would mix up experiments
+		if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null || spinnerInteger != null )) {
+			ui.showDialog("WARNING! You cannot load a previous PhenoLog file and fill out other fields.");
+			throw new IllegalArgumentException("WARNING! You cannot load a previous PhenoLog file and fill out other fields.");
 		}
 		
-		//3. New Analysis. This is OK. Create a new PhenoScoreKeeperLog file in the chosen records directory, AS LONG AS THERE IS NO EXISTING PhenoScoreKeeperLog FILE IN THIS DIRECTORY
-		if  ( recordsDirectory != null && recordsFile == null) {
+		//3. New Analysis. This is OK. Create a new PhenoLog file in the chosen records directory, AS LONG AS THERE IS NO EXISTING PhenoLog FILE IN THIS DIRECTORY
+		if  (recordsFile == null && (fExt != null || inputDir != null || outputDir != null || spinnerInteger != null )) {
 			
-			//First ensure that there are no existing PhenoScoreKeeperLog files. We don't want to overwrite anything unintentionally!
-			//This lambda expression will list all files starting with "PhenoScoreKeeperLog"
-			File[] phenoScoreKeeperFiles = recordsDirectory.listFiles((d, name) -> name.startsWith("PhenoScoreKeeperLog"));
+			//First ensure that there are no existing PhenoLog files. We don't want to overwrite anything unintentionally!
+			//This lambda expression will list all files starting with "PhenoLog"
+			File[] phenoScoreKeeperFiles = outputDir.listFiles((d, name) -> name.startsWith("PhenoLog"));
 			if (phenoScoreKeeperFiles.length != 0) {
 				
-				ui.showDialog("WARNING! There is already an existing PhenoScoreKeeperLog in this directory."
+				ui.showDialog("WARNING! There is already an existing PhenoLog in this directory."
 						+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
 				
-				throw new IllegalArgumentException("WARNING! There is already an existing PhenoScoreKeeperLog in this directory."
+				throw new IllegalArgumentException("WARNING! There is already an existing PhenoLog in this directory."
 						+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
 				
 			}
 			
 			
 			
-			
-			Path recordsFilePath = Paths.get(recordsDirectory.getAbsolutePath(), "PhenoScoreKeeperLog" + "_" + date + ".txt");
+			//By default, the records file is always created in the specified outputDir
+			Path recordsFilePath = Paths.get(outputDir.getAbsolutePath(), "PhenoLog" + "_" + date + ".txt");
 			
 			File newRecordsFile = new File(recordsFilePath.toString());
 			
@@ -116,8 +120,8 @@ public class PhenoScoreKeeper implements Command {
 		}
 		
 		
-		//4. Continued Analysis. This also OK. Load the chosen PhenoScoreKeeperLog records file
-		if  ( recordsDirectory == null && recordsFile != null) {
+		//4. Continued Analysis. This also OK. Load the chosen PhenoLog records file and harvest the inputDir, outputDir, fExt, and  number of phenotypes
+		if  ( recordsFile != null) {
 			
 			logfileObj = new LogFile(recordsFile, inputDir, fExt);
 			
