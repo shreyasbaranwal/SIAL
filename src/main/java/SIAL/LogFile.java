@@ -64,6 +64,15 @@ private String fExtension;
 	}
 	
 	
+	public File getInputDirectory() {
+		
+		return this.inputDir;
+		
+	}
+	
+	public String getExtension() {
+		return this.fExtension;
+	}
  
 	
 	/**
