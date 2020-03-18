@@ -1,10 +1,15 @@
 package SIAL;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Log files record which files in a directory have already been analyzed
@@ -73,6 +78,60 @@ private String fExtension;
 	public String getExtension() {
 		return this.fExtension;
 	}
+	
+	/**
+	 * 
+	 * Harvests Metadata from log files. Meta_datas line start with "Meta_data:" and all subsequent data 
+	 * on that line is separated by a colon. 
+	 * An example Metadata line -> "Meta_data:input_directory:/home/user/Desktop/myfolder"
+	 * LogFile.harvestMetaData() would return "input_directory" as key and "/home/user/Desktop/myfolder" as value
+	 * 
+	 * @return hashmap containing Metadata keys and values
+	 * @throws FileNotFoundException 
+	 * 
+	 * 
+	 */
+	
+	public HashMap <String, String> harvestMetaData() throws FileNotFoundException{
+		
+		HashMap<String, String> map = new HashMap<String, String>();
+		
+		//Regex captures lines beginning with "Meta_data".
+		//The parentheses group everything between the colons on that line
+		Pattern p = Pattern.compile("^Meta_data:(.*):(.*$)");
+		
+
+			
+		BufferedReader input = new BufferedReader(new FileReader(this.whichFile()));
+			
+		String line;
+		try {
+			while (input.readLine() != null) {
+			
+			  line = input.readLine();
+			  
+			  //see 
+			  Matcher m = p.matcher(line);
+				if(m.matches()) {
+				
+				map.put(m.group(1), m.group(2));
+				
+				}
+					
+				}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			input.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
  
 	
 	/**
@@ -128,29 +187,15 @@ private String fExtension;
 
 		LogFile exLogfile  = new LogFile(log, inputdir, extension);
 		
-		exLogfile.writeMetadata("input_directory: " + exLogfile.inputDir.toString());
+		exLogfile.writeMetadata("input_directory:" + exLogfile.inputDir.toString());
 		
-		exLogfile.writeMetadata("output_directory: " + exLogfile.whichFile().getParent());
+		exLogfile.writeMetadata("output_directory:" + exLogfile.whichFile().getParent());
 		
-		System.out.println("All files");
+		exLogfile.writeMetadata("extension:" + exLogfile.getExtension());
 		
-		//lambda expression to only list files in input directory having specified extension
-		for (File file : inputdir.listFiles((d, name) -> name.endsWith(extension))) {
-			
-			System.out.println(file.toString()); 
-		}
-			
-		System.out.println("Files left to analyze");
-		
-		for (File fileb : exLogfile.notAnalyzedYet()) {
-			
-			System.out.println(fileb.toString());
-			
-			
-		}
-		
-			
-		
+		HashMap<String, String> metaDataMap = exLogfile.harvestMetaData();
+		System.out.println("metadata: " + metaDataMap);
+
 			
 		}
 		
