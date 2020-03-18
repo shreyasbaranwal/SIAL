@@ -119,15 +119,97 @@ public class LogFile_Tests {
 		  exLogFile.appendLine(fileThree.getName());
 		  
 		  HashMap<String, String> metaDataMap = exLogFile.harvestMetaData();
-		  
-		  System.out.println("Size is: " + metaDataMap.keySet().size());
-		  System.out.println("map:" + metaDataMap);
-		  
+		  		  
 		  assertTrue(metaDataMap.size() == 3);
 		  
 		  
 		
 		 }
+	
+	    // Ensure that the correct number of metadata lines are retrieved, even when metadata lines are after file names. 
+	  //In this test the metadata is correctly written without any whitespace between the colon delimiters, and the metadata lines are added FIRST
+	@Test
+	public void test_harvestMetaDataSize_noWhitespace_metaLast() throws IOException {
+		File fileOne = input_folder.newFile("1.czi");
+		  
+		  File fileTwo = input_folder.newFile("2.czi");
+		  
+		  File fileThree = input_folder.newFile("3.czi");
+		  
+		  File log = output_folder.newFile("myLogFile.txt");
+		  
+		  String extension = "czi";
+		  
+		  LogFile exLogFile = new LogFile(log, input_folder.getRoot(), extension);
+		  
+		//write file names (pretending we analyzed these files)
+		  exLogFile.appendLine(fileOne.getName());
+		  
+		  exLogFile.appendLine(fileTwo.getName());
+		  
+		  exLogFile.appendLine(fileThree.getName());
+		  
+		  //write metadata 
+		  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
+		  
+		  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
+		  
+		  exLogFile.writeMetaData("extension", exLogFile.getExtension());
+		  
+		  
+		  HashMap<String, String> metaDataMap = exLogFile.harvestMetaData();
+		  
+		  assertTrue(metaDataMap.size() == 3);
+		
+		 }
+	
+    // Ensure that the correct number of metadata lines are retrieved, even when there are redundant metadata lines \	  //In this test the metadata is correctly written without any whitespace between the colon delimiters, and the metadata lines are added FIRST
+	@Test
+	public void test_harvestMetaDataSize_redundantMetaData() throws IOException {
+		File fileOne = input_folder.newFile("1.czi");
+		  
+		  File fileTwo = input_folder.newFile("2.czi");
+		  
+		  File fileThree = input_folder.newFile("3.czi");
+		  
+		  File log = output_folder.newFile("myLogFile.txt");
+		  
+		  String extension = "czi";
+		  
+		  LogFile exLogFile = new LogFile(log, input_folder.getRoot(), extension);
+		  
+		//write file names (pretending we analyzed these files)
+		  exLogFile.appendLine(fileOne.getName());
+		  
+		  exLogFile.appendLine(fileTwo.getName());
+		  
+		  exLogFile.appendLine(fileThree.getName());
+		  
+		  //write metadata 
+		  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
+		  
+		  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
+		  
+		  exLogFile.writeMetaData("extension", exLogFile.getExtension());
+		  
+		//write metadata again
+		  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
+		  
+		  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
+		  
+		  exLogFile.writeMetaData("extension", exLogFile.getExtension());
+		  
+		  
+		  HashMap<String, String> metaDataMap = exLogFile.harvestMetaData();
+		  
+		  assertTrue(metaDataMap.size() == 3); //we should still have only three unique metadata lines
+		
+		 }
+	
+	
+	
+	
+	
 	 }
 	
 
