@@ -106,9 +106,11 @@ public class FileEditor {
 		// for simple debugging and testing
 		
 
-		FileEditor example = new FileEditor(new File("/Users/davidtyrpak/Desktop/output/log.txt"));
+		FileEditor example = new FileEditor(new File("/Users/davidtyrpak/Desktop/log.txt"));
 		
 		example.whichFile();
+		
+		System.out.println(example.countLines());
 		
 		example.appendLine("This is a test");
 		
