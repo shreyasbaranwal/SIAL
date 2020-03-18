@@ -27,7 +27,6 @@ public class FileEditor {
 	
 	public File whichFile() {
 		
-		System.out.println(this.infile.toString());
 		
 		return this.infile;
 		
@@ -54,7 +53,7 @@ public class FileEditor {
 	public void appendLine(String inputText) throws IOException{
 	
 	if ( this.countLines() == 0) { //if the file is empty, add to the top of the text file
-		System.out.println("empty!");
+	
 		BufferedWriter writer = new BufferedWriter(new FileWriter(this.infile, false));//Set false for non-append mode
 	    
 		 writer.write(inputText); 
