@@ -224,7 +224,7 @@ public class PhenoScoreKeeper implements Command {
 				 score = Integer.valueOf(string_score);
 				
 				//if user input is within the correct range, break
-                 if (score <= spinnerInteger | score >= 1) {
+                 if (score <= spinnerInteger && score >= 1) {
 					break;
 					
 				}
