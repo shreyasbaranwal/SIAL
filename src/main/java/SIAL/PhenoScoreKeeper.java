@@ -1,6 +1,7 @@
 package SIAL;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +59,7 @@ public class PhenoScoreKeeper implements Command {
 	
 
 	@Parameter(label = "Input number of phenotypes",
-			style = NumberWidget.SPINNER_STYLE, min = "0", max = "1000", required = false)
+			style = NumberWidget.SPINNER_STYLE, min = "0", max = "1000", persist = false, required = false)
 		private Integer spinnerInteger;
 
 	
@@ -80,7 +81,7 @@ public class PhenoScoreKeeper implements Command {
 		}
 		
 		//2. Error. User cannot load a PhenoLog file and then select any of the fields for a new analysis. This would mix up experiments
-		if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null || spinnerInteger != null )) {
+		if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null || spinnerInteger != 0 )) {
 			ui.showDialog("WARNING! You cannot load a previous PhenoLog file and fill out other fields.");
 			throw new IllegalArgumentException("WARNING! You cannot load a previous PhenoLog file and fill out other fields.");
 		}
@@ -133,17 +134,55 @@ public class PhenoScoreKeeper implements Command {
 		}
 		
 		
-		//4. Continued Analysis. This also OK. Load the chosen PhenoLog records file and harvest the inputDir, outputDir, fExt, and number of phenotypes
-		if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null && spinnerInteger == null )) {
+		//4. Continued Analysis. This also OK. Load the chosen PhenoLog records file and harvest the inputDir, outputDir, fExt, 
+		//and number of phenotypes
+		if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null && spinnerInteger == 0 )) {
 			
-			logfileObj = new LogFile(recordsFile, inputDir, fExt);
+			
+			/*
+			 * create temporary log file so that we use the harvestMetaData() method to
+			 * collect required metadata from the pre-existing PhenoLog file.
+			 */
+			LogFile tempLogFile = new LogFile(recordsFile, inputDir, fExt);
+			
+			try {
+				String string_spinnerInteger = tempLogFile.harvestMetaData().get("number_of_phenotypes");
+				int int_spinnerInteger = Integer.parseInt(string_spinnerInteger);
+				spinnerInteger = Integer.valueOf(int_spinnerInteger);
+			} catch (FileNotFoundException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			
+			
+			//we will initialize input_directory in the below try/catch block
+			File input_directory = null;
+			
+			try {
+				input_directory = new File(tempLogFile.harvestMetaData().get("input_directory"));
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				ui.showDialog("WARNING! input directory not found in specified PhenoLog file.");
+			}
+			
+			String file_extension = null;
+			try {
+				file_extension = tempLogFile.harvestMetaData().get("file_extension");
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ui.showDialog("WARNING! file extension not found in specified PhenoLog file.");
+			}
+			
+			logfileObj = new LogFile(recordsFile, input_directory, file_extension);
 			
 		}
 		
 
 		
-		//lambda expression to only list files having specified extension
-		File[] inputFiles = inputDir.listFiles((d, name) -> name.endsWith(fExt));		
+		
 			
 		// Store phenotype scores and original filenames in hashmap/dictionary
 		HashMap<String, Integer> phenoDict = new HashMap <String, Integer>();	
@@ -205,6 +244,7 @@ public class PhenoScoreKeeper implements Command {
 			e.printStackTrace();
 		} 
 			
+		
 			//write the HashMap of phenotype scores and original filenames to PhenoScore.txt
 			try {
 		
