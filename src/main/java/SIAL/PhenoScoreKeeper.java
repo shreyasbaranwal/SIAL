@@ -119,11 +119,11 @@ public class PhenoScoreKeeper implements Command {
 			
 			try {
 				//record all relevant metadata to 
-				logfileObj.writeMetadata("input_directory:" + inputDir.getAbsolutePath());
-				logfileObj.writeMetadata("output_directory:" + logfileObj.whichFile().getParent());
-				logfileObj.writeMetadata("file_extension:" + fExt);
-				logfileObj.writeMetadata("number_of_phenotypes:" + spinnerInteger.toString());
-				logfileObj.writeMetadata("date:" + date);
+				logfileObj.writeMetaData("input_directory", inputDir.getAbsolutePath());
+				logfileObj.writeMetaData("output_directory", logfileObj.whichFile().getParent());
+				logfileObj.writeMetaData("file_extension", fExt);
+				logfileObj.writeMetaData("number_of_phenotypes", spinnerInteger.toString());
+				logfileObj.writeMetaData("date", date);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

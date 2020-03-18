@@ -66,11 +66,11 @@ public class LogFile_Tests {
 	  LogFile exLogFile = new LogFile(log, input_folder.getRoot(), extension);
 	  
 	  //write metadata 
-	  exLogFile.writeMetadata("input_directory:" + exLogFile.getInputDirectory().toString());
+	  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
 	  
-	  exLogFile.writeMetadata("output_directory:" + exLogFile.whichFile().getParent());
+	  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
 	  
-	  exLogFile.writeMetadata("extension:" + exLogFile.getExtension());
+	  exLogFile.writeMetaData("extension", exLogFile.getExtension());
 	  
 	  //collect final line of Meta_data and ensure it matches with what we added. This should be TRUE
 	  boolean lastMetaDataBoolean = exLogFile.readFinalLine().matches("^Meta_data:extension:czi$");
@@ -105,11 +105,11 @@ public class LogFile_Tests {
 		  LogFile exLogFile = new LogFile(log, input_folder.getRoot(), extension);
 		  
 		  //write metadata 
-		  exLogFile.writeMetadata("input_directory:" + exLogFile.getInputDirectory().toString());
+		  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
 		  
-		  exLogFile.writeMetadata("output_directory:" + exLogFile.whichFile().getParent());
+		  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
 		  
-		  exLogFile.writeMetadata("extension:" + exLogFile.getExtension());
+		  exLogFile.writeMetaData("extension", exLogFile.getExtension());
 		  		  
 		  //write file names (pretending we analyzed these files)
 		  exLogFile.appendLine(fileOne.getName());
@@ -123,7 +123,7 @@ public class LogFile_Tests {
 		  System.out.println("Size is: " + metaDataMap.keySet().size());
 		  System.out.println("map:" + metaDataMap);
 		  
-		  //assertTrue(metaDataMap.size() == 3);
+		  assertTrue(metaDataMap.size() == 3);
 		  
 		  
 		
