@@ -135,8 +135,9 @@ public class PhenoScoreKeeper implements Command {
 		
 		
 		//4. Continued Analysis. This also OK. Load the chosen PhenoLog records file and harvest the inputDir, outputDir, fExt, 
-		//and number of phenotypes
+		//and number of Phenotypes
 		if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null && spinnerInteger == 0 )) {
+			
 			
 			
 			/*
@@ -145,6 +146,7 @@ public class PhenoScoreKeeper implements Command {
 			 */
 			LogFile tempLogFile = new LogFile(recordsFile, inputDir, fExt);
 			
+			//harvest number of phenotypes
 			try {
 				String string_spinnerInteger = tempLogFile.harvestMetaData().get("number_of_phenotypes");
 				int int_spinnerInteger = Integer.parseInt(string_spinnerInteger);
@@ -152,6 +154,7 @@ public class PhenoScoreKeeper implements Command {
 			} catch (FileNotFoundException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
+				ui.showDialog("WARNING! number of phenotypes not found in specified PhenoLog file.");
 			}
 			
 			
@@ -159,6 +162,7 @@ public class PhenoScoreKeeper implements Command {
 			//we will initialize input_directory in the below try/catch block
 			File input_directory = null;
 			
+			//harvest input directory
 			try {
 				input_directory = new File(tempLogFile.harvestMetaData().get("input_directory"));
 			} catch (FileNotFoundException e1) {
@@ -167,6 +171,8 @@ public class PhenoScoreKeeper implements Command {
 				ui.showDialog("WARNING! input directory not found in specified PhenoLog file.");
 			}
 			
+			
+			//harvest file_extension
 			String file_extension = null;
 			try {
 				file_extension = tempLogFile.harvestMetaData().get("file_extension");
@@ -176,7 +182,18 @@ public class PhenoScoreKeeper implements Command {
 				ui.showDialog("WARNING! file extension not found in specified PhenoLog file.");
 			}
 			
+			//now we can properly initialize the log file
 			logfileObj = new LogFile(recordsFile, input_directory, file_extension);
+			
+			//but we also need to grab the output directory from the PhenoLog file so we can write to the PhenotypeScores.csv file
+			try {
+				outputDir = new File (tempLogFile.harvestMetaData().get("output_directory"));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ui.showDialog("WARNING! output directory not found in specified PhenoLog file.");
+			}
+			
 			
 		}
 		
