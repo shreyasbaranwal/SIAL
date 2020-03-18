@@ -59,13 +59,14 @@ private String fExtension;
 	 * Explicit method for appending metadata to log file, for example the input directory, date,
 	 * experiment name, etc. All metadata lines are prefixed with "Meta_data:" to enable differentiation between metadata and which files
 	 * have already been analyzed.
+	 * Ensure your meta_key and meta_value strings do not contain a colon!
 	 * @param metadata_text For example "Name: My simple image analysis experiment" + 
 	 * @return void
-	 * @throws IOException 
+	 * @throws IOException if the log file object doesn't exist on your file system
 	 * 
 	 */
-	public void writeMetadata(String information) throws IOException {
-		this.appendLine("Meta_data:" + information);
+	public void writeMetaData(String meta_key, String meta_value) throws IOException {
+		this.appendLine("Meta_data:" + meta_key + ":" + meta_value);
 	}
 	
 	
@@ -98,7 +99,7 @@ private String fExtension;
 		
 		//Regex captures lines beginning with "Meta_data".
 		//The parentheses group everything between the colons on that line
-		Pattern p = Pattern.compile("^Meta_data:(.*):(.*$)");
+		Pattern p = Pattern.compile("^Meta_data:(.+):(.+)$");
 		
 
 			
@@ -106,9 +107,9 @@ private String fExtension;
 			
 		String line;
 		try {
-			while (input.readLine() != null) {
+			while ( (line = input.readLine()) != null) {
 			
-			  line = input.readLine();
+			  
 			  
 			  //see 
 			  Matcher m = p.matcher(line);
@@ -177,6 +178,7 @@ private String fExtension;
 
 	public static void main(String[] args) throws IOException {
 		// main method for debugging and examples
+		LogFile exLogfile;
 		
 		File inputdir = new File("/Users/davidtyrpak/Desktop/output");
 		
@@ -185,16 +187,21 @@ private String fExtension;
 		String extension = "czi";
 		
 
-		LogFile exLogfile  = new LogFile(log, inputdir, extension);
+		 exLogfile  = new LogFile(log, inputdir, extension);
+		 
+		exLogfile.appendLine("1.czi");
+		exLogfile.appendLine("2.czi");
+		exLogfile.appendLine("3.czi");
 		
-		exLogfile.writeMetadata("input_directory:" + exLogfile.inputDir.toString());
+		exLogfile.writeMetaData("input_directory", exLogfile.inputDir.toString());
 		
-		exLogfile.writeMetadata("output_directory:" + exLogfile.whichFile().getParent());
+		exLogfile.writeMetaData("output_directory", exLogfile.whichFile().getParent());
 		
-		exLogfile.writeMetadata("extension:" + exLogfile.getExtension());
+		exLogfile.writeMetaData("extension", exLogfile.getExtension());
 		
-		HashMap<String, String> metaDataMap = exLogfile.harvestMetaData();
-		System.out.println("metadata: " + metaDataMap);
+		System.out.println(exLogfile.harvestMetaData());
+		
+	
 
 			
 		}
