@@ -99,7 +99,7 @@ private String fExtension;
 		
 		//Regex captures lines beginning with "Meta_data".
 		//The parentheses group everything between the colons on that line
-		Pattern p = Pattern.compile("^Meta_data:(.+):(.+)$");
+		Pattern p = Pattern.compile("^Meta_data:(.+?):(.+?)$");
 		
 
 			
