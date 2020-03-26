@@ -103,7 +103,7 @@ public class PhenoScoreKeeper implements Command {
 			}
 			
 			
-			//If we pass the above if check, create the recordsFile and corresponding LofFile object
+			//If we pass the above if check, create the recordsFile and corresponding LogfFile object
 			//By default, the recordsFile is always created in the specified outputDir
 			Path recordsFilePath = Paths.get(outputDir.getAbsolutePath(), "PhenoLog" + "_" + date + ".txt");
 			
