@@ -82,11 +82,11 @@ public class ROIRecorder implements Command {
 				}
 				
 				//2. Error. User cannot choose to create a new records file and attempt to start a new experiment. This would mix up experiments
-				if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null)) {
-					ui.showDialog("WARNING! You cannot load a previous records file and start a new experiment. If you want to continue"
-							+ "a previous experiment, simply load the corresponding ROI_Records_File and leave the other fields blank)");
-					throw new IllegalArgumentException("WARNING! You cannot load a previous records file and start a new experiment. If you want to continue"
-							+ "a previous experiment, simply load the corresponding ROI_Records_File and leave the other fields blank)");
+				if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null || prefix != null)) {
+					ui.showDialog("WARNING! You cannot load a previous records file and start a new analysis. If you want to continue "
+							+ "a previous analysis, load the corresponding ROI_Records_File and leave all other fields blank.");
+					throw new IllegalArgumentException("WARNING! You cannot load a previous records file and start a new analysis. If you want to continue"
+							+ "a previous analysis, load the corresponding ROI_Records_File and leave the other fields blank)");
 				}
 				
 				//3. New Analysis. This is OK. Create a new ROI_Records_File file in the chosen directory as long as there is no existing ROI_Records_File in the directory.
