@@ -42,19 +42,22 @@ public class ROIRecorder implements Command {
 	//Also by default this ROI_Records_File file is always placed in the outputDir
 
 	
-	@Parameter(label="If a continued anlaysis, load your ROI_Records_File. If a new analysis, ignore this field and fill out ALL below fields", 
+	@Parameter(label="If a continued anlaysis, load your ROI_Records_File. If a new analysis, ignore this field and fill out below fields", 
 			style="file", persist = false, required = false)
 	private File recordsFile;
 	
 	
-	@Parameter(label = "file extension (e.g. tiff, jpeg, czi)", persist = false)
+	@Parameter(label = "file extension (e.g. tiff, jpeg, czi)", persist = false, required  = false)
 	private String fExt;
 	
-	@Parameter(label="Select input directory", style="directory", persist = false)
+	@Parameter(label="Select input directory", style="directory", persist = false, required  = false)
 	private File inputDir;
 	
-	@Parameter(label="Select an output directory", style="directory", persist = false)
+	@Parameter(label="Select an output directory", style="directory", persist = false, required  = false)
 	private File outputDir;
+	
+	@Parameter(label = "Optional prefix. Must be one word. ROIset and Results will be named with this prefix", persist = false, required  = false)
+	private String prefix;
 	
 	
 
@@ -122,6 +125,11 @@ public class ROIRecorder implements Command {
 						logfileObj.writeMetaData("output_directory", logfileObj.whichFile().getParent());
 						logfileObj.writeMetaData("file_extension", fExt);
 						logfileObj.writeMetaData("date", date);
+						
+						if (prefix != null) {logfileObj.writeMetaData("prefix", prefix);}
+						//if the user didn't specify the optional prefix, just make it an empty string
+						else {prefix = "";}
+						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -138,46 +146,73 @@ public class ROIRecorder implements Command {
 					/*
 					 * create temporary log file so that we use the harvestMetaData() method to
 					 * collect required metadata from the pre-existing ROI_Records_File.
+					 * At this point inputDir and fExt are null. But we will update them in the below try/catch blocks
 					 */
 					LogFile tempLogFile = new LogFile(recordsFile, inputDir, fExt);
 					
 					
 					
-					//we will initialize input_directory in the below try/catch block
-					File input_directory = null;
-					
-					//harvest input directory
+					//harvest input_directory and update inputDir
 					try {
-						input_directory = new File(tempLogFile.harvestMetaData().get("input_directory"));
+						inputDir = new File(tempLogFile.harvestMetaData().get("input_directory"));
 					} catch (FileNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-						ui.showDialog("WARNING! input directory not found in specified ROI_Records_File.");
+						ui.showDialog("WARNING! Specified ROI_Records_File not found.");
 					}
+					if (inputDir == null ) {
+						ui.showDialog("WARNING! input directory not found in specified ROI_Records_File.");
+						throw new NullPointerException("WARNING! input directory not found in specified ROI_Records_File.");
+						}
 					
 					
-					//harvest file_extension
-					String file_extension = null;
+					//harvest file_extension and update fExt
 					try {
-						file_extension = tempLogFile.harvestMetaData().get("file_extension");
+						fExt = tempLogFile.harvestMetaData().get("file_extension");
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						ui.showDialog("WARNING! file extension not found in specified ROI_Records_File.");
+						ui.showDialog("WARNING! Specified ROI_Records_File not found.");
+					}
+					if (fExt == null ) {
+					ui.showDialog("WARNING! file extension not found in specified ROI_Records_File.");
+					throw new NullPointerException("WARNING! file extension  not found in specified ROI_Records_File.");
 					}
 					
-					//now we can properly initialize the log file
-					logfileObj = new LogFile(recordsFile, input_directory, file_extension);
 					
-					//but we also need to grab the output directory from the ROI_Records_File so we know where to write output
+					
+					
+					//now we can properly initialize the log file
+					logfileObj = new LogFile(recordsFile, inputDir, fExt);
+					
+					
+					
+					
+					//But we also need to grab the output directory from the ROI_Records_File so we know where to write output
 					try {
 						outputDir = new File (tempLogFile.harvestMetaData().get("output_directory"));
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						ui.showDialog("WARNING! output directory not found in specified ROI_Records_File.");
+						ui.showDialog("WARNING! Specified ROI_Records_File not found.");
 					}
+					if (outputDir == null ) {
+						
+						ui.showDialog("WARNING! output directory not found in specified ROI_Records_File.");
+						throw new NullPointerException("WARNING! output directory not found in specified ROI_Records_File.");
+						 }
 					
+					
+					//and we also need to check for a prefix. If it was specified by the user, harvest it
+					try {
+						prefix = tempLogFile.harvestMetaData().get("prefix");
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						ui.showDialog("WARNING! Specified ROI_Records_File not found.");
+					}
+					//if there was no specified prefix, just make prefix an empty string.
+					if (prefix == null) {prefix = "";}
 					
 				}
 				
@@ -191,10 +226,10 @@ public class ROIRecorder implements Command {
     Integer outputFiles_count = outputFiles.length;
 	
 	
-   //At any given time, the output directory should have exactly twice as many files as the log file has entries
+   //At any given time, the output directory should have exactly twice as many files as the log file has file name entries
    try
    {
-    if (logfileObj.countLines() != outputFiles_count/2) 
+    if (logfileObj.countAnalyzedFiles() != outputFiles_count/2) 
     	throw new IOException("Your ROI_Records_File doesnt look correct." + System.lineSeparator() + "Because you produce one results file and ROIset for each image, "
     			+ "your output directory should have twice as many files as your ROI_Records_File has entries." + System.lineSeparator() + ""
     					+ "Be sure to check for hidden files in your output directory"); 
@@ -218,7 +253,6 @@ public class ROIRecorder implements Command {
 			"area mean standard modal min centroid center perimeter shape feret's integrated median skewness area_fraction display redirect=None decimal=5");
 	
 	
-	String prefix = "non_background";
 	
 		try {
 			for (File file : logfileObj.notAnalyzedYet()) {
