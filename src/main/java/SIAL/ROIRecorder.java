@@ -1,6 +1,7 @@
 package SIAL;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,9 +33,19 @@ import net.imagej.ImageJ;
 @Plugin(type = Command.class, headless = true,
 menuPath = "Plugins > SIAL > ROI Recorder")
 public class ROIRecorder implements Command {
-	
+		
 	@Parameter
 	private UIService ui;
+	
+	//recordsFile will record which files we've analyzed and will store our metadata for this experiment (e.g. inputDir, fExt, outputDir)
+	//By default the recordsFile is prefixed with ROI_Records_File.
+	//Also by default this ROI_Records_File file is always placed in the outputDir
+
+	
+	@Parameter(label="If a continued anlaysis, load your ROI_Records_File. If a new analysis, ignore this field and fill out ALL below fields", 
+			style="file", persist = false, required = false)
+	private File recordsFile;
+	
 	
 	@Parameter(label = "file extension (e.g. tiff, jpeg, czi)", persist = false)
 	private String fExt;
@@ -44,12 +55,6 @@ public class ROIRecorder implements Command {
 	
 	@Parameter(label="Select an output directory", style="directory", persist = false)
 	private File outputDir;
-	
-	@Parameter(label="If new analysis, select a directory for your ROI_Records_File (records which images you have already analyzed)", style="directory", persist = false, required = false)
-	private File recordsDirectory = null;
-	
-	@Parameter(label="If a continued anlaysis, load your ROI_Records_File", style="file", persist = false, required = false)
-			private File recordsFile = null;
 	
 	
 
@@ -68,22 +73,24 @@ public class ROIRecorder implements Command {
 				String date = new SimpleDateFormat("MM_dd_yyyy").format(new Date());
 				
 				//1. Error. User must either create a new records file or load a previous version, otherwise their progress will not be recorded.
-				if ( recordsDirectory == null && recordsFile == null) {
+				if (recordsFile == null && (fExt == null || inputDir == null || outputDir == null)) {
 					ui.showDialog("WARNING! You didnt create a records file or load a previous records file!.");
 					throw new IllegalArgumentException("You didnt create a records file or load a previous records file!.");
 				}
 				
-				//2. Error. User cannot choose to create a new records file and load a previous version. This would mix up experiments
-				if  ( recordsDirectory != null && recordsFile != null) {
-					ui.showDialog("WARNING! You cannot create a new records file and load a previous records file.");
-					throw new IllegalArgumentException("You cannot create a neww file and load a previous records file");
+				//2. Error. User cannot choose to create a new records file and attempt to start a new experiment. This would mix up experiments
+				if  ( recordsFile != null && (fExt != null || inputDir != null || outputDir != null)) {
+					ui.showDialog("WARNING! You cannot load a previous records file and start a new experiment. If you want to continue"
+							+ "a previous experiment, simply load the corresponding ROI_Records_File and leave the other fields blank)");
+					throw new IllegalArgumentException("WARNING! You cannot load a previous records file and start a new experiment. If you want to continue"
+							+ "a previous experiment, simply load the corresponding ROI_Records_File and leave the other fields blank)");
 				}
 				
 				//3. New Analysis. This is OK. Create a new ROI_Records_File file in the chosen directory as long as there is no existing ROI_Records_File in the directory.
 				//We don't want users unintentionally overwriting their records files.
-				if  ( recordsDirectory != null && recordsFile == null) {
+				if  (recordsFile == null && (fExt != null && inputDir != null && outputDir != null)) {
 					
-					File[] ROI_Records_Files = recordsDirectory.listFiles((d, name) -> name.startsWith("ROI_Records_File"));
+					File[] ROI_Records_Files = outputDir.listFiles((d, name) -> name.startsWith("ROI_Records_File"));
 					
 					if (ROI_Records_Files.length != 0) {
 						
@@ -94,7 +101,9 @@ public class ROIRecorder implements Command {
 								+ " If you are certain you dont need this file, you can manually delete it from your directory before using this program.");
 					}
 					
-					Path recordsFilePath = Paths.get(recordsDirectory.getAbsolutePath(), "ROI_Records_File" + "_" + date + ".txt");
+					//If we pass the above if check, create the recordsFile and corresponding LogFile object
+					//By default, the recordsFile is always created in the specified outputDir
+					Path recordsFilePath = Paths.get(outputDir.getAbsolutePath(), "ROI_Records_File" + "_" + date + ".txt");
 					
 					File newRecordsFile = new File(recordsFilePath.toString());
 					
@@ -107,13 +116,68 @@ public class ROIRecorder implements Command {
 					
 					logfileObj = new LogFile(newRecordsFile, inputDir, fExt);
 					
+					try {
+						//record all relevant metadata to 
+						logfileObj.writeMetaData("input_directory", inputDir.getAbsolutePath());
+						logfileObj.writeMetaData("output_directory", logfileObj.whichFile().getParent());
+						logfileObj.writeMetaData("file_extension", fExt);
+						logfileObj.writeMetaData("date", date);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}
 				
 				
-				//4. OK. load the chosen records file
-				if  ( recordsDirectory == null && recordsFile != null) {
+				//4. Continued Analysis. This also OK. Load the chosen ROI_Records_File file and harvest the inputDir, outputDir, fExt, 
+				//and any other required metadata
+				if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null)) {
 					
-					logfileObj = new LogFile(recordsFile, inputDir, fExt);
+
+					/*
+					 * create temporary log file so that we use the harvestMetaData() method to
+					 * collect required metadata from the pre-existing ROI_Records_File.
+					 */
+					LogFile tempLogFile = new LogFile(recordsFile, inputDir, fExt);
+					
+					
+					
+					//we will initialize input_directory in the below try/catch block
+					File input_directory = null;
+					
+					//harvest input directory
+					try {
+						input_directory = new File(tempLogFile.harvestMetaData().get("input_directory"));
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						ui.showDialog("WARNING! input directory not found in specified ROI_Records_File.");
+					}
+					
+					
+					//harvest file_extension
+					String file_extension = null;
+					try {
+						file_extension = tempLogFile.harvestMetaData().get("file_extension");
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						ui.showDialog("WARNING! file extension not found in specified ROI_Records_File.");
+					}
+					
+					//now we can properly initialize the log file
+					logfileObj = new LogFile(recordsFile, input_directory, file_extension);
+					
+					//but we also need to grab the output directory from the ROI_Records_File so we know where to write output
+					try {
+						outputDir = new File (tempLogFile.harvestMetaData().get("output_directory"));
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						ui.showDialog("WARNING! output directory not found in specified ROI_Records_File.");
+					}
+					
 					
 				}
 				
@@ -131,14 +195,14 @@ public class ROIRecorder implements Command {
    try
    {
     if (logfileObj.countLines() != outputFiles_count/2) 
-    	throw new IOException("Your log file doesnt look correct." + System.lineSeparator() + "Because you produce one results file and ROIset for each image, "
-    			+ "your output directory should have twice as many files as your log file has entries." + System.lineSeparator() + ""
+    	throw new IOException("Your ROI_Records_File doesnt look correct." + System.lineSeparator() + "Because you produce one results file and ROIset for each image, "
+    			+ "your output directory should have twice as many files as your ROI_Records_File has entries." + System.lineSeparator() + ""
     					+ "Be sure to check for hidden files in your output directory"); 
     } 
 	catch (IOException e) {
         e.printStackTrace();
-        IJ.log("WARNING! Your log file doesnt look correct." + System.lineSeparator() + "Because you produce one results file and ROIset for each image, "
-    			+ "your output directory should have twice as many files as your log file has entries");
+        IJ.log("WARNING! Your ROI_Records_File doesnt look correct." + System.lineSeparator() + "Because you produce one results file and ROIset for each image, "
+    			+ "your output directory should have twice as many files as your ROI_Records_File has entries");
     
 	 //should prompt user to re-enter log file with WaitForUserDialog() 
 	} 
