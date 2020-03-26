@@ -173,6 +173,63 @@ private String fExtension;
 		}
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return the number of meta data lines in the file. Meta data lines begin with "Meta_data:"
+	 * @throws IOException if the log file doesn't exist
+	 * 
+	 */
+	
+	public Integer countMetaDataLines() throws IOException {
+
+		BufferedReader input = new BufferedReader(new FileReader(this.infile));
+		Integer meta_lines = 0;
+		
+		String line;
+	
+		
+		while ( (line = input.readLine()) != null) {
+			
+			//The regular expression matches a line beginning with "Meta_data:" and then any number of optional characters, and then the end of the line.
+			if (line.matches("^Meta_data:(.*)?$")) {
+				
+				meta_lines++;
+			}
+		
+		//if the line doesn't begin with "^Meta_data:(.*)?$" it isn't a MetaData line and we can return our count
+		else { 
+			input.close();
+			return meta_lines;
+		}
+		}
+		
+		//we 
+		input.close();
+		return meta_lines;
+
+		
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @return the number of files which have been analyzed. Each time a file is analyzed, its file
+	 * name is written to the log file.
+	 * @throws IOException if the log file doesn't exist
+	 * 
+	 */
+	public Integer countAnalyzedFiles() throws IOException {
+		
+		//the number of analyzed files is just the total number of lines in the log file minus the number of metadata lines
+		Integer analyzedFiles = this.countLines() - this.countMetaDataLines();
+		
+		return analyzedFiles;
+		
+		
+		
+	}
+	
 	
 	
 
