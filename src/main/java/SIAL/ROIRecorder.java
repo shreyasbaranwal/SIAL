@@ -77,8 +77,8 @@ public class ROIRecorder implements Command {
 				
 				//1. Error. User must either create a new records file or load a previous version, otherwise their progress will not be recorded.
 				if (recordsFile == null && (fExt == null || inputDir == null || outputDir == null)) {
-					ui.showDialog("WARNING! You didnt create a records file or load a previous records file!.");
-					throw new IllegalArgumentException("You didnt create a records file or load a previous records file!.");
+					ui.showDialog("WARNING! You didnt properly create a new analysis or load a previous records file!");
+					throw new IllegalArgumentException("WARNING! You didnt properly create a new analysis or load a previous records file!");
 				}
 				
 				//2. Error. User cannot choose to create a new records file and attempt to start a new experiment. This would mix up experiments
@@ -140,7 +140,7 @@ public class ROIRecorder implements Command {
 				
 				//4. Continued Analysis. This also OK. Load the chosen ROI_Records_File file and harvest the inputDir, outputDir, fExt, 
 				//and any other required metadata
-				if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null)) {
+				if  ( recordsFile != null && (fExt == null && inputDir == null && outputDir == null && prefix == null)) {
 					
 
 					/*
@@ -268,11 +268,16 @@ public class ROIRecorder implements Command {
 			//image title without extension. Will use to save RoiSets and Results table
 			String title = imp.getShortTitle();	
 			
-			//create path for RoiSet
-			Path roiSetPath = Paths.get(outputdir_path, prefix + "_" + title + "_RoiSet.zip");
+			//create path for RoiSet. If prefix is empty/not specified remove leading "_"
+			Path roiSetPath;
+			if (prefix.isEmpty()) {roiSetPath = Paths.get(outputdir_path, title + "_RoiSet.zip");}
+			else {roiSetPath = Paths.get(outputdir_path, prefix + "_" + title + "_RoiSet.zip");}
 			
-			//create path for results table.  
-			Path resultsPath = Paths.get(outputdir_path, prefix + "_" + title + "_" + "results.csv");
+			
+			//create path for results table. If prefix is empty/not specified remove leading "_"
+			Path resultsPath;
+			if (prefix.isEmpty()) {resultsPath = Paths.get(outputdir_path, title + "_" + "results.csv");}
+			else {resultsPath = Paths.get(outputdir_path, prefix + "_" + title + "_" + "results.csv");}
 			
 			//call RoiManager 
 			RoiManager rm = new RoiManager(); 
