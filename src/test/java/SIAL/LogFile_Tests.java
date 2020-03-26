@@ -206,6 +206,49 @@ public class LogFile_Tests {
 		
 		 }
 	
+	
+	//Ensure null is returned for a non existent meta data key
+	@Test
+	public void test_null_harvestMetaData() throws IOException {
+		
+		  
+		  File log = output_folder.newFile("myLogFile.txt");
+		  
+		  String extension = "czi";
+		  
+		  LogFile exLogFile = new LogFile(log, input_folder.getRoot(), extension);
+		  
+		  
+		  //write metadata 
+		  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
+		  
+		  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
+		  
+		  exLogFile.writeMetaData("extension", exLogFile.getExtension());
+		  
+		//write metadata again
+		  exLogFile.writeMetaData("input_directory", exLogFile.getInputDirectory().toString());
+		  
+		  exLogFile.writeMetaData("output_directory", exLogFile.whichFile().getParent());
+		  
+		  exLogFile.writeMetaData("extension", exLogFile.getExtension());
+		  
+		  assertTrue( exLogFile.harvestMetaData().get("prefix") == null);
+		  
+		  
+		
+		 }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//Ensure that the correct number of metadata lines are retrieved
 	@Test
 	public void test_countMetaDataLines() throws IOException {
