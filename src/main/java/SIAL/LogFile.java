@@ -60,7 +60,7 @@ private String fExtension;
 	 * experiment name, etc. All metadata lines are prefixed with "Meta_data:" to enable differentiation between metadata and which files
 	 * have already been analyzed.
 	 * Ensure your meta_key and meta_value strings do not contain a colon!
-	 * @param metadata_text For example "Name: My simple image analysis experiment" + 
+	 * @param meta data key and value. Example ("name", "david")
 	 * @return void
 	 * @throws IOException if the log file object doesn't exist on your file system
 	 * 
