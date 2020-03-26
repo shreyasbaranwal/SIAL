@@ -183,7 +183,7 @@ private String fExtension;
 	
 	public Integer countMetaDataLines() throws IOException {
 
-		BufferedReader input = new BufferedReader(new FileReader(this.infile));
+		BufferedReader input = new BufferedReader(new FileReader(this.whichFile()));
 		Integer meta_lines = 0;
 		
 		String line;
@@ -197,14 +197,9 @@ private String fExtension;
 				meta_lines++;
 			}
 		
-		//if the line doesn't begin with "^Meta_data:(.*)?$" it isn't a MetaData line and we can return our count
-		else { 
-			input.close();
-			return meta_lines;
-		}
 		}
 		
-		//we 
+		 
 		input.close();
 		return meta_lines;
 
