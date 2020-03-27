@@ -283,11 +283,34 @@ public class ROIRecorder implements Command {
 			RoiManager rm = new RoiManager(); 
 				
 			
-			//prompt user to select ROIs
-			WaitForUserDialog wd_roi= new WaitForUserDialog("USER ROI SELECTION","First add ROIs to RoiManager. Then press OK ");
 			
-			//display dialog box and message.
-			wd_roi.show();
+			//Ensure that user has selected ROIs and added them to the ROI Manager.
+			//This while loop runs until they do this.
+			while (true) {
+				
+				//prompt user to select ROIs
+				WaitForUserDialog wd_roi= new WaitForUserDialog("USER ROI SELECTION","First add ROIs to RoiManager. Then press OK ");
+				
+				//display dialog box and message.
+				wd_roi.show();
+				
+				 
+				//if user added ROIs, break out of while loop
+                if (rm.getCount() > 0) {
+					break;
+					
+				}
+                
+             // otherwise continue while loop until user adds ROIs
+                WaitForUserDialog wd_warning_message = new WaitForUserDialog("WARNING! No ROIs Selected!", 
+                		"You pressed OK without selecting ROIs and adding them to the ROI Manager." + System.lineSeparator() + 
+                		"Press OK to reanalyze last image" );
+        		
+        		//display dialog box and message.
+        		wd_warning_message.show();
+        		
+        		
+			}
 			
 			
 			if (rm.getCount() == 0) { //ensure user has selected ROIs before pressing OK on user dialog box
