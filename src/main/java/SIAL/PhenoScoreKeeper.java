@@ -143,10 +143,11 @@ public class PhenoScoreKeeper implements Command {
 			/*
 			 * create temporary log file so that we use the harvestMetaData() method to
 			 * collect required metadata from the pre-existing PhenoLog file.
+			 * At this point inputDir and fExt are null. But we will update them in the below try/catch blocks
 			 */
 			LogFile tempLogFile = new LogFile(recordsFile, inputDir, fExt);
 			
-			//harvest number of phenotypes
+			//harvest number of phenotypes and update spinnerInteger
 			try {
 				String string_spinnerInteger = tempLogFile.harvestMetaData().get("number_of_phenotypes");
 				int int_spinnerInteger = Integer.parseInt(string_spinnerInteger);
@@ -154,36 +155,49 @@ public class PhenoScoreKeeper implements Command {
 			} catch (FileNotFoundException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
-				ui.showDialog("WARNING! number of phenotypes not found in specified PhenoLog file.");
+				ui.showDialog("WARNING! Specified ROI_Records_File not found.");
+				
 			}
+			if (spinnerInteger == null ) {
+				ui.showDialog("WARNING! number of phenotypes not found in specified PhenoLog file.");
+				throw new NullPointerException("WARNING! number of phenotypes not found in specified PhenoLog file.");
+				}
 			
 			
 			
-			//we will initialize input_directory in the below try/catch block
-			File input_directory = null;
 			
 			//harvest input directory
 			try {
-				input_directory = new File(tempLogFile.harvestMetaData().get("input_directory"));
+				inputDir = new File(tempLogFile.harvestMetaData().get("input_directory"));
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-				ui.showDialog("WARNING! input directory not found in specified PhenoLog file.");
+				ui.showDialog("WARNING! Specified ROI_Records_File not found.");
 			}
+			if (inputDir == null ) {
+				ui.showDialog("WARNING! input directory not found in specified ROI_Records_File.");
+				throw new NullPointerException("WARNING! input directory not found in specified ROI_Records_File.");
+				}
 			
 			
 			//harvest file_extension
-			String file_extension = null;
+			//harvest file_extension and update fExt
 			try {
-				file_extension = tempLogFile.harvestMetaData().get("file_extension");
+				fExt = tempLogFile.harvestMetaData().get("file_extension");
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				ui.showDialog("WARNING! file extension not found in specified PhenoLog file.");
+				ui.showDialog("WARNING! Specified ROI_Records_File not found.");
+			}
+			if (fExt == null ) {
+			ui.showDialog("WARNING! file extension not found in specified ROI_Records_File.");
+			throw new NullPointerException("WARNING! file extension  not found in specified ROI_Records_File.");
 			}
 			
+			
 			//now we can properly initialize the log file
-			logfileObj = new LogFile(recordsFile, input_directory, file_extension);
+			logfileObj = new LogFile(recordsFile, inputDir, fExt);
+			
 			
 			//but we also need to grab the output directory from the PhenoLog file so we can write to the PhenotypeScores.csv file
 			try {
@@ -217,7 +231,7 @@ public class PhenoScoreKeeper implements Command {
 				String string_score;
 				Integer score;
 				
-				//get user input score. 01/27/20 Not currently working.
+				//get user input score and continue to prompt them until they input a score in the correct range
 				while (true) {
 				 string_score  = IJ.getString("Enter your phenotype score for this ROI", "1" + "-" + Integer.toString(spinnerInteger));
 				//convert that score to an integer
