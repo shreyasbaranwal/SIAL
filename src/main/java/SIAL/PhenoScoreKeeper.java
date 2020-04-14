@@ -233,7 +233,7 @@ public class PhenoScoreKeeper implements Command {
 				
 				//get user input score and continue to prompt them until they input a score in the correct range
 				while (true) {
-				 string_score  = IJ.getString("Enter your phenotype score for this ROI", "1" + "-" + Integer.toString(spinnerInteger));
+				 string_score  = IJ.getString("Enter your phenotype score for this image", "1" + "-" + Integer.toString(spinnerInteger));
 				//convert that score to an integer
 				 score = Integer.valueOf(string_score);
 				
