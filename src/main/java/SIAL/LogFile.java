@@ -148,6 +148,9 @@ private String fExtension;
 		// extension relevant files
 		File[] inputDirFiles = this.inputDir.listFiles((d, name) -> name.endsWith(this.fExtension));
 		
+		//sort the array. Provides a guarantee that the files are listed in alphabetical order rather than sorted by some OS specific reason
+		Arrays.parallelSort(inputDirFiles);
+		
 		// if the log file is empty, just return all the extension relevant files
 		if (this.countLines() == 0) {return inputDirFiles; }
 		
