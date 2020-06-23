@@ -20,7 +20,7 @@ In many biomedical research labs, image analysis tasks are relatively simple but
 
 As primarily “wet-lab” scientists, we wanted to develop user friendly plugins focused on the most common tasks that fellow wet-lab researchers encounter during image analysis.  Because FIJI is routinely used by biomedical researchers the world over, we developed a series of FIJI plugins written in java.  We name this package SIAL: a simple image analysis library. It aids users in human-assisted image analysis by providing plugins for image randomization, phenotype scoring, and ROI selection. In addition, because wet-lab scientists are typically interrupted by multiple experiments, SIAL keeps track of which images in a directory have already been analyzed so that researchers can easily start and stop their workflows without hassle.
 
-SIAL is easily installed via the ImageJ update website service, utilizes simple user interfaces, requires no programming experience, and requires no dependencies except FIJI. The individual plugins can be easily integrated with workflows involving other FIJI plugins or with workflows employing another open source software, like Cell Profiler or QuPath. 
+SIAL is easily installed via the ImageJ update website service, utilizes simple user interfaces, requires no programming experience, and requires no dependencies except FIJI. The individual programs inside SIAL can be easily integrated with workflows involving other FIJI plugins or with workflows employing another open source software, like Cell Profiler or QuPath. 
 
 ### Author contributions:
 SIAL was developed by David R. Tyrpak at the MacKay lab in the School of Pharmacy of the University of Southern California. Yaocun Li and Siqi Lei tested the software and reported bugs.
