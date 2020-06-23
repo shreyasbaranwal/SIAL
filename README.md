@@ -23,7 +23,7 @@ As primarily “wet-lab” scientists, we wanted to develop user friendly plugin
 SIAL is easily installed via the ImageJ update website service, utilizes simple user interfaces, requires no programming experience, and requires no dependencies except FIJI. The individual plugins can be easily integrated with workflows involving other FIJI plugins or with workflows employing another open source software, like Cell Profiler or QuPath. 
 
 ### Author contributions:
-SIAL was developed by DRT at the MacKay lab in the School of Pharmacy of the University of Southern California. YL and SL tested the software and reported bugs.
+SIAL was developed by David R. Tyrpak at the MacKay lab in the School of Pharmacy of the University of Southern California. Yaocun Li and Siqi Lei tested the software and reported bugs.
 
 ### Acknowledgements:
 This work was supported by grants RO1 GM114839 to J.A.M. and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugins. In addition, we also thank the image.sc community for technical assistance and advice.
