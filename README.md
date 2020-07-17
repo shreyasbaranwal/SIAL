@@ -1,6 +1,8 @@
 # SIAL
 ### Simple Image Analysis Library
 
+https://zenodo.org/badge/DOI/10.5281/zenodo.3950492.svg
+
 SIAL: A simple image analysis library for wet-lab scientists
 
 David R. Tyrpak 1, 
