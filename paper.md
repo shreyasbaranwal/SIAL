@@ -10,19 +10,19 @@ authors:
   - name: David R. Tyrpak
     orcid: 0000-0002-2281-6129
     affiliation: 1
- - name: Yaocun Li
-   affiliation: 1
- - name: Siqi Lei
-  affiliation: 1
- - name: J. Andrew MacKay
- affiliation: "1,2,3"
+  - name: Yaocun Li
+    affiliation: 1
+  - name: Siqi Lei
+    affiliation: 1
+  - name: J. Andrew MacKay
+    affiliation: "1,2,3"
 affiliations:
- - name: Department of Pharmacology and Pharmaceutical Sciences, School of Pharmacy of the University of Southern California
-   index: 1
- - name: Keck School of Medicine of the University of Southern California, Department of Ophthalmology, Roski Eye Institute
-   index: 2
- - name: University of Southern California Viterbi School of Engineering, Biomedical Engineering
-   index: 3
+  - name: Department of Pharmacology and Pharmaceutical Sciences, School of Pharmacy of the University of Southern California
+    index: 1
+  - name: Keck School of Medicine of the University of Southern California, Department of Ophthalmology, Roski Eye Institute
+    index: 2
+  - name: University of Southern California Viterbi School of Engineering, Biomedical Engineering
+    index: 3
 date: 16 September 2020
 ---
 
