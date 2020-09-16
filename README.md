@@ -6,9 +6,9 @@
 SIAL: A simple image analysis library for wet-lab scientists
 
 David R. Tyrpak <sup>1</sup>, 
-Yaocun Li 1, 
-Siqi Lei 1, 
-J.A. MacKay1,2,3
+Yaocun Li <sup>1</sup>, 
+Siqi Lei <sup>1</sup>, 
+J.A. MacKay <sup>1,2,3</sup>
 
 1 Department of Pharmacology and Pharmaceutical Sciences, School of Pharmacy of the University of Southern California, 1985 Zonal Ave, Los Angeles, CA, USA 90089 
 
