@@ -10,11 +10,11 @@ Yaocun Li 1,
 Siqi Lei 1, 
 J.A. MacKay1,2,3
 
-1Department of Pharmacology and Pharmaceutical Sciences, School of Pharmacy of the University of Southern California, 1985 Zonal Ave, Los Angeles, CA, USA 90089 
+1 Department of Pharmacology and Pharmaceutical Sciences, School of Pharmacy of the University of Southern California, 1985 Zonal Ave, Los Angeles, CA, USA 90089 
 
-2Keck School of Medicine of the University of Southern California, Department of Ophthalmology, Roski Eye Institute. 1450 San Pablo St, Los Angeles, CA, USA 90033
+2 Keck School of Medicine of the University of Southern California, Department of Ophthalmology, Roski Eye Institute. 1450 San Pablo St, Los Angeles, CA, USA 90033
 
-3University of Southern California Viterbi School of Engineering, Biomedical Engineering. 1042 Downey Way, Los Angeles, CA, USA 90089
+3 University of Southern California Viterbi School of Engineering, Biomedical Engineering. 1042 Downey Way, Los Angeles, CA, USA 90089
 
 ### Summary:
 
