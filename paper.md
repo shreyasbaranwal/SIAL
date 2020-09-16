@@ -14,7 +14,7 @@ authors:
    affiliation: 1
  - name: Siqi Lei
   affiliation: 1
- - name J. Andrew MacKay
+ - name: J. Andrew MacKay
  affiliation: "1,2,3"
 affiliations:
  - name: Department of Pharmacology and Pharmaceutical Sciences, School of Pharmacy of the University of Southern California
