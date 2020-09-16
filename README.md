@@ -5,7 +5,7 @@
 
 SIAL: A simple image analysis library for wet-lab scientists
 
-David R. Tyrpak 1, 
+David R. Tyrpak <sup>1</sup>, 
 Yaocun Li 1, 
 Siqi Lei 1, 
 J.A. MacKay1,2,3
