@@ -24,6 +24,7 @@ affiliations:
   - name: University of Southern California Viterbi School of Engineering, Biomedical Engineering
     index: 3
 date: 16 September 2020
+bibliography: paper.bib
 ---
 
 # Summary
