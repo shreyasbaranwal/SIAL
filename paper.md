@@ -1,5 +1,5 @@
 ---
-title: 'SIAL: A simple image analysis library'
+title: 'SIAL: A simple image analysis library for wet-lab scientists'
 tags:
   - Java
   - Image Analysis
