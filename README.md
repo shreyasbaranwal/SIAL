@@ -28,9 +28,11 @@ SIAL is easily installed via the ImageJ update website service, utilizes simple 
 SIAL was developed by David R. Tyrpak at the MacKay lab in the School of Pharmacy of the University of Southern California. Yaocun Li and Siqi Lei tested the software and reported bugs.
 
 ### Acknowledgements:
-This work was supported by grants RO1 GM114839 to J.A.M. and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugins. In addition, we also thank the image.sc community for technical assistance and advice.
+This work was supported by grants RO1 GM114839 to JAM and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugins. In addition, we also thank the image.sc community for technical assistance and advice.
 
 ## Installation and Tutorials
+First ensure you have FIJI installed on your computer: https://fiji.sc
+
 To download SIAL, open FIJI, go to “Help > Update…” and then update FIJI. After FIJI is finished downloading all updates, a window named “ImageJ Updater” will open. Select “Manage Update Sites > Add update site” and add this url: https://sites.imagej.net/D-tear/
 
 Be sure to check the box next to this update site to ensure the FIJI adds SIAL to your FIJI Plugins folder. Select “Close > Apply changes”. FIJI will download SIAL.jar and associated dependencies. After successfully updating, FIJI will then ask to be closed and restarted. After doing this, SIAL can be accessed via the Plugins tab in FIJI. Note that SIAL will usually be installed towards the bottom of the available FIJI plugins. 
