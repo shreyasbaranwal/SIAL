@@ -28,7 +28,7 @@ SIAL is easily installed via the ImageJ update website service, utilizes simple 
 SIAL was developed by David R. Tyrpak at the MacKay lab in the School of Pharmacy of the University of Southern California. Yaocun Li and Siqi Lei tested the software and reported bugs.
 
 ### Acknowledgements:
-This work was supported by grants RO1 GM114839 to JAM and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugins. In addition, we also thank the image.sc community for technical assistance and advice.
+This work was supported by grants RO1 GM114839 to JAM and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugin. In addition, we also thank the image.sc community for technical assistance and advice.
 
 ## Installation and Tutorials
 First ensure you have FIJI installed on your computer: https://fiji.sc
