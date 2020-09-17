@@ -39,7 +39,7 @@ SIAL is easily installed via the ImageJ update website service, utilizes simple 
 
 # Acknowledgements
 
-The development of SIAL was supported by grants RO1 GM114839 to JAM and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugins. In addition, we also thank the image.sc community for technical assistance and advice.
+The development of SIAL was supported by grants RO1 GM114839 to JAM and F31DK118881 to DRT. We thank Anh Truong for valuable suggestions in improving the plugin. In addition, we also thank the image.sc community for technical assistance and advice.
 
 # Installation and Tutorials
 
