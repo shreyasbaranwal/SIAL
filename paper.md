@@ -38,7 +38,7 @@ File Randomizer: Copies images in a specified directory, randomly renames the co
 
 PhenoScoreKeeper: Helps speed up manual phenotype scoring of images by partially automating score collection and record keeping.
 
-ROI Recorder: Uses ImageJ's built-in ROI manger to quickly harvest ROIsets and measurments from images in a specified directory.
+ROI Recorder: Uses ImageJ's built-in ROI manager to quickly harvest ROIsets and measurments from images in a specified directory.
 
 Both the PhenoScoreeKeeper and ROI Recorder programs track which images have already been analyzed so that users can stop and start their analyses without losing progress. Links to videos detailing the use of these programs are provided in the Installation and Tutorials section.
 
